@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TSP y metodologías ágiles · Taller de planificación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+ --bg:#eef2f6;--surface:#fff;--surface-2:#f4f7fa;--ink:#24303d;--muted:#5b6878;
+ --line:#c9d7e4;--accent:#236fa1;--accent-ink:#fff;--accent-soft:#e3eef7;
+ --slate:#475577;--ok:#24804f;--ok-soft:#e5f3ea;--warn:#a3501c;--warn-soft:#f8ece3;
+ --display:"Source Serif 4",Georgia,serif;--body:"Source Sans 3","Segoe UI",Arial,sans-serif;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121a23;--surface:#1a2430;--surface-2:#212d3b;--ink:#e3e9f0;--muted:#a3b0bf;--line:#33475c;--accent:#6aaee0;--accent-ink:#0c1620;--accent-soft:#1d3347;--slate:#b4c0d9;--ok:#6cc595;--ok-soft:#173326;--warn:#e6a073;--warn-soft:#3a2518;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121a23;--surface:#1a2430;--surface-2:#212d3b;--ink:#e3e9f0;--muted:#a3b0bf;--line:#33475c;--accent:#6aaee0;--accent-ink:#0c1620;--accent-soft:#1d3347;--slate:#b4c0d9;color-scheme:dark}
+*{box-sizing:border-box}html,body{min-height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.65 var(--body);display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 16px 8px}
+.top-inner,main,.controls-inner{max-width:62rem;margin:0 auto;width:100%}
+.top-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.course,.section-name,.eyebrow,.tag{font-size:.9rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.course{color:var(--muted)}.section-name{color:var(--accent)}
+.bar{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+main{flex:1;padding:8px 16px 24px}
+.slide{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:clamp(22px,4vw,44px);display:flex;flex-direction:column;gap:16px}
+.slide[hidden]{display:none!important}.eyebrow{color:var(--slate);margin:0}
+h1,h2,h3{font-family:var(--display);line-height:1.2;margin:0;text-wrap:balance}
+h1{font-size:clamp(2rem,5vw,2.7rem);color:var(--accent)}h2{font-size:clamp(1.55rem,4vw,2rem)}h3{font-size:1.22rem;color:var(--slate)}
+p{margin:0;max-width:70ch}.lead{font-size:1.25rem;color:var(--muted);max-width:56ch}
+strong{color:var(--ink)}ul{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;max-width:70ch}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(15rem,1fr));gap:16px}.cols>*{min-width:0}
+.panel{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.panel h3{font:700 1.06rem var(--body);color:var(--accent)}
+.note{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:14px 18px;max-width:70ch}
+.flow{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;max-width:none}.flow li{flex:1 1 8rem;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface-2);display:flex;flex-direction:column;gap:4px}.flow b{font:600 1.05rem var(--display)}.flow small{color:var(--muted);line-height:1.4}
+.video-box{border:1px solid var(--accent);border-radius:12px;padding:14px;background:var(--accent-soft);display:flex;flex-direction:column;gap:10px}
+.video-frame{position:relative;width:100%;aspect-ratio:16/9;background:#172635;border-radius:8px;overflow:hidden}
+.video-frame iframe,.video-frame video{width:100%;height:100%;border:0;display:block;background:#000}.video-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#fff;background:linear-gradient(135deg,#1b3448,#236fa1)}
+.video-empty strong{color:#fff;font:700 1.4rem var(--display)}.video-empty span{max-width:32rem}
+.reflection{border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px}
+label{font-weight:700;color:var(--slate)}textarea,input,select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;width:100%}
+textarea{min-height:88px;resize:vertical}input:focus,textarea:focus,select:focus{outline:3px solid var(--accent-soft);border-color:var(--accent)}
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:10px}
+.choice{border:1px solid var(--line);background:var(--surface-2);padding:12px;border-radius:9px;display:flex;gap:9px;align-items:flex-start}
+.choice input{width:auto;margin-top:5px;accent-color:var(--accent)}
+table{border-collapse:collapse;width:100%;min-width:34rem;font-size:.94rem}th{background:var(--slate);color:#fff;text-align:left;padding:9px 12px}td{padding:10px 12px;border-top:1px solid var(--line);vertical-align:top}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button,.button{font:700 1rem var(--body);border-radius:10px;padding:10px 18px;cursor:pointer;border:2px solid var(--accent);background:var(--surface);color:var(--accent);text-decoration:none}
+button.primary,.button.primary{background:var(--accent);color:var(--accent-ink)}
+button:disabled{opacity:.4;cursor:default}button:focus-visible,.button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.status{font-size:.9rem;color:var(--ok)}.summary{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:16px;white-space:pre-wrap}
+nav.controls{position:sticky;bottom:0;z-index:5;background:var(--bg);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.controls-inner{display:flex;justify-content:space-between;align-items:center;gap:12px}.dots{display:flex;flex:1;justify-content:center;gap:6px}.dots button{width:12px;height:12px;padding:0;border-radius:50%;border:2px solid var(--line);background:var(--surface)}.dots button.on{background:var(--accent);border-color:var(--accent)}.dots button.done{border-color:var(--accent)}
+@media(max-width:560px){.dots{display:none}.controls-inner button{padding:9px 12px}.flow{flex-direction:column}.flow li{flex:none}}
+@media(prefers-reduced-motion:reduce){.bar span{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-inner">
+ <div class="top-row"><span class="course">Desarrollo de Software en Equipos · TSP</span><span class="section-name" id="sectionName">Bienvenida</span></div>
+ <div class="bar" aria-hidden="true"><span id="bar"></span></div>
+</div></header>
+<main id="slides">
+<section class="slide" data-id="bienvenida" data-section="Bienvenida">
+ <p class="eyebrow">Taller · Escenario 5</p>
+ <h1>Planificar en equipo: TSP y metodologías ágiles</h1>
+ <p class="lead">Una experiencia para analizar distintas formas de organizar el trabajo y tomar decisiones en diferentes contextos.</p>
+ <p>Apreciados estudiantes:</p>
+ <p>En esta actividad van a revisar cómo TSP organiza la planeación de un proyecto mediante reuniones de lanzamiento y cómo las metodologías ágiles, especialmente Scrum, atienden necesidades similares mediante sus principios, responsabilidades, eventos y prácticas.</p>
+ <p>El propósito es que, al terminar, puedan elegir y justificar qué prácticas de gestión resultan pertinentes según las características de una situación y las necesidades de un equipo.</p>
+ <div class="cols">
+  <div class="panel"><h3>Duración</h3><p>40 minutos aproximadamente: videos, reflexiones y decisión grupal.</p></div>
+  <div class="panel"><h3>Modalidad</h3><p>Recorrido guiado en equipo. Una persona puede registrar las respuestas acordadas.</p></div>
+  <div class="panel"><h3>Resultado</h3><p>Una ficha con tres decisiones justificadas y acciones concretas para el proyecto.</p></div>
+ </div>
+ <div class="note"><strong>Pregunta orientadora:</strong> ¿Qué prácticas de planificación y organización le convienen a nuestro equipo, teniendo en cuenta el proyecto, el tiempo disponible y la forma en que estamos trabajando?</div>
+</section>
+
+<section class="slide" data-id="ruta" data-section="La ruta">
+ <p class="eyebrow">La ruta de trabajo</p><h2>Una ruta para explorar cómo se organiza el trabajo</h2>
+ <p>Avancen por las etapas a medida que se habiliten. En cada momento encontrarán una situación, ideas para analizar y una pregunta para conversar con el equipo.</p>
+ <ul class="flow">
+  <li><b>Explorar</b><small>Comprender una situación y sus necesidades.</small></li>
+  <li><b>Organizar</b><small>Definir actividades, tiempos y recursos.</small></li>
+  <li><b>Gestionar</b><small>Atender la calidad, los cambios y los riesgos.</small></li>
+  <li><b>Evaluar</b><small>Revisar resultados y aprender de la experiencia.</small></li>
+ </ul>
+ <div class="note">Mientras ven los videos, relacionen las ideas con experiencias de equipos en distintos contextos: una empresa, una iniciativa comunitaria, una actividad cultural, un evento o un equipo deportivo.</div>
+ <p>La comparación no busca establecer una equivalencia exacta entre cada reunión TSP y un evento Scrum. Se trata de reconocer cómo cada enfoque atiende necesidades de gestión del proyecto.</p>
+</section>
+
+<section class="slide" data-id="video1" data-section="Video 1 · Entender y organizar">
+ <p class="eyebrow">Etapa 1 · Entender y organizar</p><h2>¿Qué vamos a construir y cómo se organiza el equipo?</h2>
+ <p>Este video aborda las reuniones TSP 1 y 2: entender el proyecto, aclarar expectativas, definir metas y objetivos y distribuir los roles.</p>
+ <div class="video-box"><h3>Recurso audiovisual · Entender y organizar</h3><div class="video-frame" data-video="0"><div class="video-empty"><div><strong>Recurso audiovisual</strong><br><span>Espacio para el video de NotebookLM</span></div></div></div><p class="missing">El reproductor se activa al incorporar la dirección de inserción del video.</p></div>
+ <div class="panel"><h3>Mientras observan</h3><ul><li>¿Qué información necesita compartir el cliente o responsable del proyecto?</li><li>¿Qué diferencia hay entre una meta general y una meta que se puede medir?</li><li>¿Cómo se distribuyen las responsabilidades en TSP y cómo se organizan en Scrum?</li></ul></div>
+ <div class="reflection"><label for="r1">Reflexión del equipo: en un equipo que debe organizar un evento, ¿qué necesita comprender antes de empezar y cómo podría acordar metas y responsabilidades?</label><textarea id="r1" data-save placeholder="Registren aquí la conclusión del equipo..."></textarea></div>
+</section>
+
+<section class="slide" data-id="video2" data-section="Video 2 · Definir y planificar">
+ <p class="eyebrow">Etapa 2 · Definir y planificar</p><h2>¿Qué trabajo hay que realizar y con qué recursos?</h2>
+ <p>Este video aborda las reuniones TSP 3 y 4: definir el producto y sus componentes, descomponer el trabajo, establecer el proceso de desarrollo y estimar actividades, recursos y tiempos.</p>
+ <div class="video-box"><h3>Recurso audiovisual · Definir y planificar</h3><div class="video-frame" data-video="1"><div class="video-empty"><div><strong>Recurso audiovisual</strong><br><span>Espacio para el video de NotebookLM</span></div></div></div><p class="missing">El reproductor se activa al incorporar la dirección de inserción del video.</p></div>
+ <div class="panel"><h3>Mientras observan</h3><ul><li>¿Cómo se descompone el producto en componentes, entregables y tareas?</li><li>¿Qué información se necesita para estimar tiempos y recursos?</li><li>¿Cómo se organiza y prioriza el trabajo en un Product Backlog y durante la planificación de un Sprint?</li></ul></div>
+ <div class="reflection"><label for="r2">Reflexión del equipo: imaginen un grupo que debe lanzar una campaña de comunicación en cuatro semanas. ¿Cómo podría dividir el trabajo, estimar tiempos y coordinar las tareas?</label><textarea id="r2" data-save placeholder="Registren aquí la conclusión del equipo..."></textarea></div>
+</section>
+
+<section class="slide" data-id="video3" data-section="Video 3 · Calidad y riesgos">
+ <p class="eyebrow">Etapa 3 · Calidad, fases y riesgos</p><h2>¿Cómo se controla la calidad y se responde a los cambios?</h2>
+ <p>Este video aborda las reuniones TSP 5, 6 y 7: establecer metas de calidad, planear la siguiente fase e identificar riesgos y medidas de mitigación o contingencia.</p>
+ <div class="video-box"><h3>Recurso audiovisual · Calidad y riesgos</h3><div class="video-frame" data-video="2"><div class="video-empty"><div><strong>Recurso audiovisual</strong><br><span>Espacio para el video de NotebookLM</span></div></div></div><p class="missing">El reproductor se activa al incorporar la dirección de inserción del video.</p></div>
+ <div class="panel"><h3>Mientras observan</h3><ul><li>¿Qué criterios permiten reconocer que un producto cumple las condiciones de calidad esperadas?</li><li>¿Cómo se selecciona y organiza el trabajo de corto plazo?</li><li>¿Qué prácticas permiten inspeccionar el avance, adaptarse y hacer visibles los riesgos?</li></ul></div>
+ <div class="reflection"><label for="r3">Reflexión del equipo: en una iniciativa comunitaria con recursos limitados, ¿qué riesgo podría afectar el resultado y qué medida permitiría reducir su impacto?</label><textarea id="r3" data-save placeholder="Riesgo identificado y medida propuesta..."></textarea></div>
+</section>
+
+<section class="slide" data-id="video4" data-section="Video 4 · Validar y aprender">
+ <p class="eyebrow">Etapa 4 · Presentar, validar y aprender</p><h2>¿Cómo se revisa el plan y se mejora la forma de trabajar?</h2>
+ <p>Este video aborda las reuniones TSP 8 y 9 y el Postmortem: preparar la presentación, presentar el plan para su revisión y evaluar el proceso de lanzamiento para identificar aprendizajes.</p>
+ <div class="video-box"><h3>Recurso audiovisual · Validar y aprender</h3><div class="video-frame" data-video="3"><div class="video-empty"><div><strong>Recurso audiovisual</strong><br><span>Espacio para el video de NotebookLM</span></div></div></div><p class="missing">El reproductor se activa al incorporar la dirección de inserción del video.</p></div>
+ <div class="panel"><h3>Mientras observan</h3><ul><li>¿Qué debe conocer quien revisa y aprueba un plan?</li><li>¿Qué se evalúa en el Postmortem de TSP?</li><li>¿Cómo contribuyen la Sprint Review y la Sprint Retrospective a revisar el producto y la forma de trabajar?</li></ul></div>
+ <div class="reflection"><label for="r4">Reflexión del equipo: después de realizar una actividad o entregar un producto, ¿qué debería revisar el equipo para reconocer aciertos y acordar mejoras?</label><textarea id="r4" data-save placeholder="Registren aquí la conclusión del equipo..."></textarea></div>
+</section>
+
+<section class="slide" data-id="comparar" data-section="Comparar enfoques">
+ <p class="eyebrow">Pongamos las ideas en relación</p><h2>Distintas formas de atender necesidades del proyecto</h2>
+ <p>La tabla resume las perspectivas trabajadas. En Scrum, las responsabilidades y los eventos se articulan dentro de un marco iterativo; Kanban permite visualizar y gestionar el flujo de trabajo.</p>
+ <div class="table-wrap"><table>
+ <thead><tr><th>Necesidad</th><th>TSP</th><th>Prácticas ágiles que pueden atenderla</th></tr></thead>
+ <tbody>
+ <tr><td>Comprender qué se necesita</td><td>Reunión 1: entender el proyecto.</td><td>Product Goal, conversación con interesados y refinamiento del Product Backlog.</td></tr>
+ <tr><td>Definir metas y responsabilidades</td><td>Reunión 2: metas, objetivos y roles.</td><td>Product Goal y responsabilidades de Product Owner, Scrum Master y Developers.</td></tr>
+ <tr><td>Organizar el trabajo</td><td>Reunión 3: plan del proyecto, productos y tareas.</td><td>Product Backlog, elementos de trabajo, priorización y Sprint Planning.</td></tr>
+ <tr><td>Estimar y programar</td><td>Reunión 4: recursos, horas y cronograma.</td><td>Planificación del Sprint y previsión del trabajo; en Kanban, gestión del flujo.</td></tr>
+ <tr><td>Gestionar calidad</td><td>Reunión 5: metas y medidas de calidad.</td><td>Definition of Done, pruebas e inspección continua.</td></tr>
+ <tr><td>Adaptar el trabajo y atender riesgos</td><td>Reuniones 6 y 7: siguiente fase y riesgos.</td><td>Sprint Goal, inspección y adaptación; visualización de bloqueos y riesgos.</td></tr>
+ <tr><td>Revisar resultados y mejorar</td><td>Reuniones 8, 9 y Postmortem.</td><td>Sprint Review y Sprint Retrospective.</td></tr>
+ </tbody></table></div>
+ <div class="note"><strong>Idea clave:</strong> una práctica se elige por la necesidad que ayuda a resolver y por su pertinencia para el equipo. También es posible combinar prácticas de distintos enfoques.</div>
+</section>
+
+<section class="slide" data-id="decision" data-section="Decisión del equipo">
+ <p class="eyebrow">Trabajo grupal · Decisión</p><h2>¿Qué prácticas elegiríamos para cada situación?</h2>
+ <p>Lean las situaciones y seleccionen una para analizarla. Después, elijan tres aspectos de gestión y acuerden qué enfoque o práctica ayudaría a atender cada uno.</p>
+ <div class="cols">
+  <div class="panel"><h3>Situación A · Organización de un evento</h3><p>Un equipo debe organizar una jornada cultural abierta al público. Tiene una fecha fija, un presupuesto limitado, varios proveedores y actividades que dependen unas de otras.</p></div>
+  <div class="panel"><h3>Situación B · Campaña de comunicación</h3><p>Un grupo de una organización social prepara una campaña digital para promover una iniciativa. Debe producir contenidos, recibir comentarios de diferentes personas y ajustar los mensajes durante el trabajo.</p></div>
+  <div class="panel"><h3>Situación C · Mejora de un servicio</h3><p>Un equipo de una empresa busca reducir los tiempos de atención a sus usuarios. Debe comprender el problema, probar cambios, medir resultados y coordinarse con varias áreas.</p></div>
+ </div>
+ <div class="reflection">
+  <label for="situacion">Situación elegida</label>
+  <select id="situacion" data-save><option value="">Seleccionar...</option><option>Situación A · Organización de un evento</option><option>Situación B · Campaña de comunicación</option><option>Situación C · Mejora de un servicio</option></select>
+ </div>
+ <p>Para cada aspecto, pueden elegir TSP, Scrum, Kanban o una combinación de prácticas. Justifiquen la elección con las condiciones de la situación.</p>
+ <div class="reflection">
+  <h3>Decisión 1</h3>
+  <label for="a1">Aspecto de gestión</label><select id="a1" data-save><option value="">Seleccionar...</option><option>Comprensión de necesidades y requisitos</option><option>Metas y responsabilidades</option><option>Descomposición y asignación del trabajo</option><option>Estimación de recursos y tiempos</option><option>Calidad del resultado</option><option>Planificación de fases</option><option>Gestión de riesgos</option><option>Validación y mejora del proceso</option></select>
+  <label for="e1">Enfoque o práctica elegida</label><select id="e1" data-save><option value="">Seleccionar...</option><option>TSP</option><option>Scrum</option><option>Kanban</option><option>Combinación de prácticas</option></select>
+  <label for="j1">Justificación y acción concreta</label><textarea id="j1" data-save placeholder="¿Por qué es pertinente para la situación? ¿Qué haría el equipo?"></textarea>
+ </div>
+ <div class="reflection">
+  <h3>Decisión 2</h3>
+  <label for="a2">Aspecto de gestión</label><select id="a2" data-save><option value="">Seleccionar...</option><option>Comprensión de necesidades y requisitos</option><option>Metas y responsabilidades</option><option>Descomposición y asignación del trabajo</option><option>Estimación de recursos y tiempos</option><option>Calidad del resultado</option><option>Planificación de fases</option><option>Gestión de riesgos</option><option>Validación y mejora del proceso</option></select>
+  <label for="e2">Enfoque o práctica elegida</label><select id="e2" data-save><option value="">Seleccionar...</option><option>TSP</option><option>Scrum</option><option>Kanban</option><option>Combinación de prácticas</option></select>
+  <label for="j2">Justificación y acción concreta</label><textarea id="j2" data-save placeholder="¿Por qué es pertinente para la situación? ¿Qué haría el equipo?"></textarea>
+ </div>
+ <div class="reflection">
+  <h3>Decisión 3</h3>
+  <label for="a3">Aspecto de gestión</label><select id="a3" data-save><option value="">Seleccionar...</option><option>Comprensión de necesidades y requisitos</option><option>Metas y responsabilidades</option><option>Descomposición y asignación del trabajo</option><option>Estimación de recursos y tiempos</option><option>Calidad del resultado</option><option>Planificación de fases</option><option>Gestión de riesgos</option><option>Validación y mejora del proceso</option></select>
+  <label for="e3">Enfoque o práctica elegida</label><select id="e3" data-save><option value="">Seleccionar...</option><option>TSP</option><option>Scrum</option><option>Kanban</option><option>Combinación de prácticas</option></select>
+  <label for="j3">Justificación y acción concreta</label><textarea id="j3" data-save placeholder="¿Por qué es pertinente para la situación? ¿Qué haría el equipo?"></textarea>
+ </div>
+ <div class="reflection"><label for="acuerdo">Conclusión: ¿qué condiciones de la situación influyeron más en sus decisiones?</label><textarea id="acuerdo" data-save></textarea></div>
+</section>
+
+<section class="slide" data-id="cierre" data-section="Cierre">
+ <p class="eyebrow">Cierre</p><h2>Una decisión profesional es una decisión fundamentada</h2>
+ <p>La gestión de proyectos ofrece distintos enfoques para organizar el trabajo, coordinar responsabilidades, cuidar la calidad y adaptarse a las condiciones del desarrollo.</p>
+ <p>El valor de esta actividad está en reconocer las necesidades concretas del equipo y elegir prácticas que ayuden a resolverlas. La decisión puede apoyarse en TSP, en un marco ágil o en una combinación coherente de prácticas.</p>
+ <div class="note"><strong>Antes de terminar:</strong> revisen que las tres decisiones tengan un aspecto identificado, un enfoque elegido, una justificación y una acción concreta coherente con la situación seleccionada.</div>
+ <div class="actions"><button class="primary" type="button" id="copyAnswers">Copiar ficha del equipo</button><span class="status" id="copyStatus" role="status"></span></div>
+ <div class="summary" id="summary">La ficha del equipo aparecerá aquí al copiar las respuestas.</div>
+ <p>Guarden la ficha en el documento compartido del equipo para conservar las decisiones acordadas.</p>
+</section>
+</main>
+<nav class="controls" aria-label="Navegación del taller"><div class="controls-inner">
+ <button type="button" id="prev">Anterior</button><div class="dots" id="dots"></div><button type="button" class="primary" id="next">Siguiente</button>
+</div></nav>
+<script>
+/* Rutas de los cuatro videos dentro del repositorio (carpeta videos/). */
+const VIDEO_FILES = ["video1.mp4","video2.mp4","video3.mp4","video4.mp4"];
+(function(){
+ const slides=[...document.querySelectorAll('.slide')],prev=document.getElementById('prev'),next=document.getElementById('next'),
+ bar=document.getElementById('bar'),dots=document.getElementById('dots'),sectionName=document.getElementById('sectionName');
+ let current=0;const key='tsp-agiles-taller-v1';
+ const get=id=>document.getElementById(id)?.value?.trim()||'';
+ slides.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',s.querySelector('h1,h2').textContent);b.addEventListener('click',()=>go(i,true));dots.appendChild(b)});
+ function go(i,focus){if(i<0||i>=slides.length)return;current=i;slides.forEach((s,j)=>s.hidden=j!==i);
+ [...dots.children].forEach((d,j)=>{d.classList.toggle('on',j===i);d.classList.toggle('done',j<i);if(j===i)d.setAttribute('aria-current','step');else d.removeAttribute('aria-current')});
+ prev.disabled=i===0;next.disabled=i===slides.length-1;bar.style.width=((i+1)/slides.length*100)+'%';sectionName.textContent=slides[i].dataset.section;
+ if(location.hash!=='#'+slides[i].dataset.id)history.replaceState(null,'','#'+slides[i].dataset.id);
+ try{localStorage.setItem(key+'-slide',slides[i].dataset.id)}catch(e){}window.scrollTo(0,0);
+ if(focus){const h=slides[i].querySelector('h1,h2');h.setAttribute('tabindex','-1');h.focus({preventScroll:true})}}
+ const idx=id=>slides.findIndex(s=>s.dataset.id===id);
+ prev.addEventListener('click',()=>go(current-1,true));next.addEventListener('click',()=>go(current+1,true));
+ document.addEventListener('keydown',e=>{if(['TEXTAREA','INPUT','SELECT'].includes(e.target?.tagName))return;if(e.key==='ArrowRight')go(current+1,true);if(e.key==='ArrowLeft')go(current-1,true)});
+ window.addEventListener('hashchange',()=>{const i=idx(location.hash.slice(1));if(i>=0&&i!==current)go(i,false)});
+ let start=idx(location.hash.slice(1));if(start<0){try{start=idx(localStorage.getItem(key+'-slide')||'')}catch(e){start=-1}}go(start<0?0:start,false);
+ document.querySelectorAll('[data-save]').forEach(el=>{const k=key+'-'+el.id;try{el.value=localStorage.getItem(k)||''}catch(e){}el.addEventListener('input',()=>{try{localStorage.setItem(k,el.value)}catch(e){}});el.addEventListener('change',()=>{try{localStorage.setItem(k,el.value)}catch(e){}})});
+ document.querySelectorAll('[data-video]').forEach(frame=>{const src=VIDEO_FILES[Number(frame.dataset.video)];if(!src)return;
+  const missing=frame.parentElement.querySelector('.missing'),empty=frame.innerHTML,v=document.createElement('video');
+  v.src=encodeURI(src);v.controls=true;v.preload='metadata';v.playsInline=true;v.title=frame.parentElement.querySelector('h3').textContent;
+  v.addEventListener('error',()=>{frame.innerHTML=empty;missing.hidden=false});
+  frame.innerHTML='';frame.appendChild(v);missing.hidden=true});
+ document.getElementById('copyAnswers').addEventListener('click',async()=>{
+  const lines=['TALLER TSP Y METODOLOGÍAS ÁGILES','Decisiones del equipo a partir de situaciones de trabajo',''];
+  lines.push('SITUACIÓN: '+get('situacion'),''); for(let i=1;i<=3;i++)lines.push('ASPECTO '+i+': '+get('a'+i),'ENFOQUE: '+get('e'+i),'JUSTIFICACIÓN Y ACCIÓN: '+get('j'+i),'');
+  lines.push('CRITERIO DEL ACUERDO: '+get('acuerdo'));const txt=lines.join('\n');
+  const status=document.getElementById('copyStatus'),summary=document.getElementById('summary');summary.textContent=txt;
+  try{await navigator.clipboard.writeText(txt);status.textContent='Ficha copiada. Péguenla en el documento del equipo.'}
+  catch(e){status.textContent='La ficha está visible arriba. Selecciónenla y cópienla.'}
+ });
+})();
+</script>
+</body></html>
